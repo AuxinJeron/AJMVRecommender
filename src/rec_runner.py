@@ -44,6 +44,21 @@ def create_submission(predictions_mat, output_fname, sample_sub_fname):
     sample_sub.to_csv(output_fname, index=False)
     return
 
+def create_ratings_csv(predictions_mat, output_fname):
+    user_n, movie_n = predictions_mat.shape
+    user_col = np.zeros(user_n * movie_n)
+    movie_col = np.zeros(user_n * movie_n)
+    for i in range(user_n):
+        for j in range(movie_n):
+            user_col[movie_n * i + j] = i + 1
+            movie_col[movie_n * i + j] = j + 1
+    d = {"user" : user_col, "movie" : movie_col}
+    df = pd.DataFrame(data = d, index=False)
+    df["rating"] = df.apply(lambda x: predictions_mat[x["user"] - 1, x["movie"] - 1], axis = 1)
+    df["id"] = df.apply(lambda x: str(x["user"]) + "_" + str(x["movie"]), axis = 1)
+    df.drop(["movie"], axis = 1, inplace = True)
+    df.to_csv(output_fname, index=False)
+    return
 
 if __name__ == "__main__":
     sample_sub_fname = "../data/sample_submission.csv"
@@ -51,5 +66,5 @@ if __name__ == "__main__":
     ratings_data_contents, ratings_mat = get_ratings_data(ratings_data_fname)
     my_mf_rec_engine = MatrixFactorizationRec()
     my_mf_rec_engine.fit(ratings_mat)
-    predictions_mat = my_mf_rec_engine.pred_all_users()
+    predictions_mat = my_mf_rec_engine.pred_all_users(True)
     create_submission(predictions_mat, "test_submission.csv", sample_sub_fname)

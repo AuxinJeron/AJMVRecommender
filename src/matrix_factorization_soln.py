@@ -15,7 +15,8 @@ class MatrixFactorizationRec(object):
         self.regularization_param = regularization_param
         self.optimizer_pct_improvement_criterion = optimizer_pct_improvement_criterion
 
-    def fit(self, ratings_mat):
+    def fit(self, ratings_mat, report_run_time=False):
+        start_time = time()
         self.ratings_mat = ratings_mat
         self.average_rating = ratings_mat.mean()
         self.n_users = ratings_mat.shape[0]
@@ -49,6 +50,8 @@ class MatrixFactorizationRec(object):
             old_sse = sse_accum
             optimizer_iteration_count += 1
         print("Fitting of latent feature matrices completed")
+        if report_run_time:
+            print("Execution time: %f seconds" % (time()-start_time))
 
     def pred_one_user(self, user_id, report_run_time=False):
         start_time = time()
