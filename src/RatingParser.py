@@ -7,7 +7,6 @@ import pandas as pd
 
 logger = logging.getLogger("logger")
 
-
 class RatingParser:
     def __init__(self):
         return
@@ -33,7 +32,7 @@ class RatingParser:
     def get_movies_data(self, fname):
         file = open(fname, encoding="ISO-8859-1")
         all_categories = set()
-        movies = {}
+        movies = []
         for line in file:
             words = line.split("::")
             id = words[0]
@@ -42,20 +41,20 @@ class RatingParser:
             for cat in words[2].split("|"):
                 categories.add(cat.strip("\n"))
                 all_categories.add(cat)
-            movies[id] = Movie(id, name, categories)
+            movies.append(Movie(id, name, categories))
             #logger.debug(movies[id])
         return movies, all_categories
 
     def get_users_data(self, fname):
         file = open(fname, encoding="ISO-8859-1")
-        users = {}
+        users = []
         for line in file:
             words = line.split("::")
             id = words[0]
             gender = words[1]
             age = words[2]
             occupation = words[3]
-            users[id] = User(id, gender, age, occupation)
+            users.append(User(id, gender, age, occupation))
             #logger.debug(users[id])
         return users
 
